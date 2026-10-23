@@ -9,6 +9,7 @@
     
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="//libtl.com/sdk.js" data-zone="12108840" data-sdk="show_12108840"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -968,7 +969,7 @@ body { align-items:stretch; }
                 <p style="font-size:11px;line-height:1.5;color:var(--text-muted);margin-bottom:14px;">Kişisel davet linkini paylaş. Hesabı doğrulanan her geçerli davet için hedef ödül <b style="color:var(--cyber-cyan)">+5 SCN</b>; davet ettiğin üyenin doğrulanmış oyun içi aktivitesinden hedef <b style="color:var(--cyber-cyan)">%10 komisyon</b>.</p>
                 <div style="border:1px solid var(--cyber-cyan);border-radius:14px;padding:12px;background:rgba(0,240,255,.06);margin-bottom:14px;">
                     <div style="font-size:10px;color:var(--text-muted);margin-bottom:7px;">KİŞİSEL DAVET LİNKİN</div>
-                    <div class="ref-code-box" style="margin-bottom:8px;"><span id="myUniqueRefLink" style="overflow-wrap:anywhere;">https://t.me/SolarXBot?startapp=LOADING</span></div>
+                    <div class="ref-code-box" style="margin-bottom:8px;"><span id="myUniqueRefLink" style="overflow-wrap:anywhere;">https://t.me/SolarXBot/app?startapp=LOADING</span></div>
                     <button class="btn-mini" style="width:100%;padding:12px;background:var(--cyber-cyan);color:#000;font-weight:900;" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i> DAVET LİNKİNİ KOPYALA</button>
                 </div>
                 <div class="stats-3col" style="margin-top:8px;">
@@ -1296,7 +1297,7 @@ body { align-items:stretch; }
     // Telegram Mini App & Sunucu Yapılandırması (Kurulumda kendi bot adınızı ve sunucu adresinizi buraya yazabilirsiniz)
     const SOLARX_CONFIG = {
         botUsername: 'SolarXBot',
-        miniAppShortName: '', // Ana Mini App kurulumu kullanılıyor
+        miniAppShortName: 'app',
         apiBaseUrl: '' // Örn: 'https://api.senin-domainin.com' (Aynı sunucudaysa '' bırakın)
     };
 
@@ -2804,7 +2805,7 @@ body { align-items:stretch; }
             if (window.SolarXRewardedAds && typeof window.SolarXRewardedAds.show === 'function') {
                 const result = await window.SolarXRewardedAds.show();
                 if (!result || !result.rewardToken) throw new Error('Reklam ödül doğrulaması alınamadı.');
-                const response = await fetch('/api/rewards/verify-ad', {
+                const response = await fetch('https://solarx.kripteks23x.workers.dev/api/rewards/verify-ad', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'same-origin',
@@ -2840,7 +2841,7 @@ body { align-items:stretch; }
     }
 
     async function copyReferralLink() {
-        const link = `https://t.me/${SOLARX_CONFIG.botUsername}?startapp=${encodeURIComponent(myUniqueCode)}`;
+        const link = `https://t.me/${SOLARX_CONFIG.botUsername}/${SOLARX_CONFIG.miniAppShortName}?startapp=${myUniqueCode}`;
         try {
             if (navigator.clipboard?.writeText) {
                 await navigator.clipboard.writeText(link);
@@ -3555,7 +3556,7 @@ body { align-items:stretch; }
             if(window.SolarXRewardedAds&&typeof window.SolarXRewardedAds.show==='function'){
                 const result=await window.SolarXRewardedAds.show({placement:arcadeAdPurpose==='revive'?'arcade_revive':'arcade_play'});
                 if(!result||!result.rewardToken)throw new Error('Reklam tamamlanamadı. Tur verilmedi.');
-                const response=await fetch('/api/rewards/verify-ad',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({rewardToken:result.rewardToken,rewardType:arcadeAdPurpose==='revive'?'arcade_revive':'arcade_play',day:today})});
+                const response=await fetch('https://solarx.kripteks23x.workers.dev/api/rewards/verify-ad',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({rewardToken:result.rewardToken,rewardType:arcadeAdPurpose==='revive'?'arcade_revive':'arcade_play',day:today})});
                 if(!response.ok)throw new Error('Sunucu reklam ödülünü doğrulayamadı. Tur verilmedi.');
                 const verified=await response.json();
                 if(verified.verified!==true||verified.granted!==true)throw new Error('Sunucu ödüllü reklamı onaylamadı. Tur verilmedi.');
@@ -3745,7 +3746,7 @@ body { align-items:stretch; }
         { const _el = document.getElementById('multBadge'); if (_el) _el.innerText = state.multiplier + 'X HIZ'; }
         { const _el = document.getElementById('storeActiveMult'); if (_el) _el.innerText = state.multiplier + 'X'; }
         updateSolarPanelButtons();
-        { const _el = document.getElementById('myUniqueRefLink'); if (_el) _el.innerText = `https://t.me/${SOLARX_CONFIG.botUsername}?startapp=${encodeURIComponent(myUniqueCode)}`; }
+        { const _el = document.getElementById('myUniqueRefLink'); if (_el) _el.innerText = `https://t.me/${SOLARX_CONFIG.botUsername}/${SOLARX_CONFIG.miniAppShortName}?startapp=${myUniqueCode}`; }
         { const _el = document.getElementById('refCountDisplay'); if (_el) _el.innerText = String(Math.floor(Number(state.referrals) || 0)); }
         { const _el = document.getElementById('refScnBalance'); if (_el) _el.innerText = `${(Number(state.refScnEarned) || 0).toFixed(3)} SCN`; }
         { const _el = document.getElementById('refCommissionBalance'); if (_el) _el.innerText = `${(Number(state.refCommissionEarned) || 0).toFixed(3)} SCN`; }
@@ -4203,6 +4204,57 @@ body { align-items:stretch; }
 
 </script>
 
+
+<script>
+// SolarX Monetag Rewarded Interstitial adapter (v76)
+(() => {
+  const API = 'https://solarx.kripteks23x.workers.dev';
+  const ZONE_ID = '12108840';
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  function telegramInitData() {
+    const tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && typeof tg.ready === 'function') tg.ready();
+    return tg && tg.initData ? tg.initData : '';
+  }
+  function makeYmid() {
+    if (window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+    return 'sx_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  }
+  window.SolarXRewardedAds = {
+    async show(options = {}) {
+      const initData = telegramInitData();
+      if (!initData) throw new Error('Reklam ödülü için oyunu Telegram içinden açmalısın.');
+      const showAd = window['show_' + ZONE_ID];
+      if (typeof showAd !== 'function') throw new Error('Monetag SDK yüklenmedi. Sayfayı yenileyip tekrar dene.');
+      const ymid = makeYmid();
+      const start = await fetch(API + '/api/ad/start', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ initData, ymid, placement: String(options.placement || 'game').replace(/[^A-Za-z0-9_.-]/g, '_').slice(0,40) })
+      });
+      if (!start.ok) throw new Error('Reklam oturumu doğrulanamadı. Telegram bot ayarlarını kontrol et.');
+      const started = await start.json();
+      if (started.ok !== true || started.ymid !== ymid) throw new Error('Reklam oturumu başlatılamadı.');
+      const result = await showAd({ ymid });
+      if (!result || result.reward_event_type !== 'valued') throw new Error('Monetag bu gösterim için ödül onaylamadı. Ek can verilmedi.');
+      // Monetag postback and frontend callback arrive independently; wait for server record.
+      let recorded = false;
+      for (let i = 0; i < 30; i++) {
+        const status = await fetch(API + '/api/ad/status', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ initData, ymid })
+        });
+        if (status.ok) {
+          const data = await status.json();
+          if (data.verified === true) { recorded = true; break; }
+        }
+        await sleep(1000);
+      }
+      if (!recorded) throw new Error('Monetag sunucu bildirimi henüz gelmedi. Güvenlik için ödül verilmedi; biraz sonra tekrar dene.');
+      return { rewardToken: ymid };
+    }
+  };
+})();
+</script>
 
 </body>
 </html>
